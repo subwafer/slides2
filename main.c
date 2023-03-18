@@ -29,10 +29,20 @@ int main(int argc, char **argv) {
 
     read_entire_file(&sh);
 
+    split_slides(&sh);
+
     return 0;
 }
 
+void split_slides(Slideshow *sh) {
+    (void) sh;
+
+    printf("split_slides not implemented.\n");
+}
+
 void read_entire_file(Slideshow *sh) {
+    sh->file_contents = NULL;
+
     FILE *file = fopen(sh->file_path, "r");
     if (file == NULL) {
         // TODO: Create a "logger" of some sort
@@ -53,19 +63,19 @@ void read_entire_file(Slideshow *sh) {
         goto cleanup;
     }
 
+    sh->file_contents = malloc(fc * sizeof(char));
+
     if (fseek(file, 0, SEEK_SET) > 0) {
         fprintf(stderr, "ERROR: Could not seek to start of file: %s | -> %s\n", sh->file_path, strerror(errno));
         goto cleanup;
     }
 
-    sh->file_contents = malloc(fc * sizeof(char));
-
     size_t rc = fread(sh->file_contents, 1, fc, file);
     assert(rc == (size_t) fc);
 
-    fwrite(sh->file_contents, 1, fc, stdout);
+    sh->content_size = rc;
+
 
 cleanup:
     if (file) fclose(file);
-    if (sh->file_contents) free(sh->file_contents);
 }

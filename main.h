@@ -11,6 +11,7 @@ typedef struct {
     char **slides_content;
 } Slideshow;
 
+void split_slides(Slideshow *sh);
 void read_entire_file(Slideshow *sh);
 
 #endif // MAIN_H_
