@@ -1,6 +1,6 @@
 # Slides2 (name needed)
 
-A slideshow application in C.
+A slideshow application in C made for fun and practice.
 
 Inspired by [Jonathan Blow's video series](https://www.youtube.com/playlist?list=PLmV5I2fxaiCL9mYvYjUj0qTnYlK4qDhkn)
 
