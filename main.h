@@ -7,7 +7,7 @@ typedef struct {
     char *file_path;
     size_t content_size;
     char *file_contents;
-    int slides_count;
+    int slide_count;
     char **slides_content;
 } Slideshow;
 
