@@ -51,6 +51,7 @@ int main(int argc, char **argv) {
 
 
     if (read_entire_file(&sh) > 0) {
+        // NOTE: Temp solution. Once UI is in, we can add a file selector.
         exit(1);
     }
 
@@ -62,6 +63,7 @@ int main(int argc, char **argv) {
         printf("A really, really cool SDL2 GUI not implemented.\n");
     }
 
+    // NOTE: We probably should check if slides_content has been initialized?
     for (int i = 0; i < sh.slide_count; i++) {
         free(sh.slides_content[i]);
     }
