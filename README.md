@@ -16,6 +16,17 @@ User creates some sort of file representing a slideshow (.md for now). It is spl
 - [-] user controls in stdout
 - [ ] SDL2 gui
 
+## Usage
+
+``` shell
+# build with build.sh
+
+./build.sh
+
+# run program in debug mode with stdout display
+./main --debug --stdout
+```
+
 ## Resources
 
 - [Effective C](https://nostarch.com/Effective_C)
