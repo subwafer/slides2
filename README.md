@@ -13,7 +13,7 @@ User creates some sort of file representing a slideshow (.md for now). It is spl
 - [x] reads a .md file
 - [x] splits the file into slides (delimiter: "---')
 - [x] basic display via stdout
-- [-] user controls in stdout
+- [x] user controls in stdout
 - [ ] SDL2 gui
 
 ## Usage
