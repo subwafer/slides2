@@ -145,6 +145,7 @@ void stdout_display(const Slideshow *sh) {
                 done = true;
                 break;
             case JUMP:
+                // NOTE: If a user types an insanely big number, results are strange. But eh. Whatever.
                 printf("Slide: (%d total slides) ", sh->slide_count);
                 scanf("%d", &user_input);
                 if (user_input < 0 || user_input == 0) {
