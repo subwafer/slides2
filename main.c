@@ -193,6 +193,7 @@ void split_slides(Slideshow *sh) {
                         state = START_DELIM;
                         if (*(c + 1) != '-') { // this handles the bullet points
                             sh->slides_content[slide_count - 1][i] = *c;
+                            state = READY;
                         }
                         break;
                     default:
