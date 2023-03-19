@@ -14,6 +14,7 @@ User creates some sort of file representing a slideshow (.md for now). It is spl
 - [x] splits the file into slides (delimiter: "---')
 - [x] basic display via stdout
 - [x] user controls in stdout
+- [x] cli args handing for --file_path
 - [ ] SDL2 gui
 
 ## Usage
@@ -23,8 +24,11 @@ User creates some sort of file representing a slideshow (.md for now). It is spl
 
 ./build.sh
 
-# run program in debug mode with stdout display
-./main --debug --stdout
+# run program in demo mode with stdout display
+./main --demo --stdout
+
+# run program and pass file_path with stdout display
+./main --file_path="./demos/show1.md" --stdout
 ```
 
 ## Resources
