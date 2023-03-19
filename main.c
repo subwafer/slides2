@@ -20,34 +20,75 @@
 **
 */
 
-bool DEBUG_MODE = false;
+bool DEMO_MODE = false;
 bool STDOUT_MODE = false;
 
-void handle_cli_args(int argc, char **argv) {
+void handle_cli_args(int argc, char **argv, Slideshow *sh) {
 
     if (argc > 0) {
         for (int i = 0; i < argc; i++) {
-            if (strcmp(argv[i], "--debug") == 0) {
-                DEBUG_MODE = true;
-                printf("------DEBUG MODE ACTIVE-------");
+            if (strcmp(argv[i], "--demo") == 0) {
+                printf("------DEMO MODE ACTIVE-------\n");
+                DEMO_MODE = true;
+                sh->file_path = "./demos/show1.md";
+
             }
 
             if (strcmp(argv[i], "--stdout") == 0) {
                 STDOUT_MODE = true;
             }
+
+            /*
+            if () {
+                sh->file_path = NULL;
+
+                char file_path[64];
+                int state = 0;
+                int index = 0;
+
+                enum state {
+                    READY,
+                    DELIM_FOUND,
+                };
+
+                for (size_t j = 0; j < strlen(argv[i]); j++) {
+                    switch (state) {
+                        case READY:
+                            switch (argv[i][j]) {
+                                case '=':
+                                    state = DELIM_FOUND;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        case DELIM_FOUND:
+                            file_path[index] = argv[i][j];
+                            break;
+                        default:
+                            break;
+                    }
+                    index++;
+                }
+                printf("FILE_PATH LOADED FROM ARGV: %s\n", sh->file_path);
+
+                sh->file_path = malloc(index * sizeof(char));
+
+                strcpy(sh->file_path, file_path);
+
+                printf("FILE_PATH LOADED FROM ARGV: %s\n", sh->file_path);
+            }
+                */
         }
     }
 
 }
 
 int main(int argc, char **argv) {
-    handle_cli_args(argc, argv);
-
     Slideshow sh;
 
-    if (DEBUG_MODE) {
-        sh.file_path = "demos/show1.md";
-    }
+    handle_cli_args(argc, argv, &sh);
+
 
 
     if (read_entire_file(&sh) > 0) {
