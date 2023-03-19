@@ -3,6 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #include "main.h"
 
@@ -19,17 +20,41 @@
 **
 */
 
+bool DEBUG_MODE = false;
+
+void handle_cli_args(int argc, char **argv) {
+
+    if (argc > 0) {
+        for (int i = 0; i < argc; i++) {
+            if (strcmp(argv[i], "--debug") == 0) {
+                DEBUG_MODE = true;
+                printf("------DEBUG MODE ACTIVE-------");
+            }
+        }
+    }
+
+}
+
 int main(int argc, char **argv) {
-    (void) argc;
-    (void) argv;
+    handle_cli_args(argc, argv);
 
     Slideshow sh;
 
-    sh.file_path = "demos/show1.md";
+    if (DEBUG_MODE) {
+        sh.file_path = "demos/show1.md";
+    }
+
 
     read_entire_file(&sh);
 
     split_slides(&sh);
+
+
+    for (int i = 0; i < sh.slide_count; i++) {
+        free(sh.slides_content[i]);
+    }
+
+    free(sh.slides_content);
 
     return 0;
 }
