@@ -50,7 +50,9 @@ int main(int argc, char **argv) {
     }
 
 
-    read_entire_file(&sh);
+    if (read_entire_file(&sh) > 0) {
+        exit(1);
+    }
 
     split_slides(&sh);
 
@@ -70,13 +72,75 @@ int main(int argc, char **argv) {
 }
 
 void stdout_display(const Slideshow *sh) {
-    // TEMP DISPLAY OUT
-    printf("FINAL ------------\n");
-    for (int sc = 0; sc < sh->slide_count; sc++) {
-        for (size_t i = 0; i < sh->content_size; i++) {
-            printf("%c", sh->slides_content[sc][i]);
+    bool done = false;
+    int current_slide = 0;
+
+    printf("[SLIDE #%d/%d]\n", current_slide + 1, sh->slide_count);
+    for (size_t i = 0; i < sh->content_size; i++) {
+        printf("%c", sh->slides_content[0][i]);
+    }
+
+    while (!done) {
+        int user_input;
+
+        enum input_handling {
+            NEXT_SLIDE =  1,
+            PREV_SLIDE = -1,
+            QUIT       =  0,
+            JUMP       =  8,
+        };
+
+        printf("\n");
+        printf("-----------------------------------------------------------------\n");
+        printf("Next Slide (1) | Prev. Slide (-1) | Jump to Slide (8) | Quit (0) > ");
+
+        scanf("%d", &user_input);
+        switch (user_input) {
+            case NEXT_SLIDE:
+                if ((current_slide + 1) < sh->slide_count) {
+                    current_slide++;
+                    printf("[SLIDE #%d/%d]\n", current_slide + 1, sh->slide_count);
+                    for (size_t i = 0; i < sh->content_size; i++) {
+                        printf("%c", sh->slides_content[current_slide][i]);
+                    }
+                } else {
+                    current_slide = (sh->slide_count - 1);
+                }
+                break;
+            case PREV_SLIDE:
+                if (current_slide == 0) {
+                    current_slide = 0;
+                } else {
+                    current_slide--;
+                    printf("[SLIDE #%d/%d]\n", current_slide + 1, sh->slide_count);
+                    for (size_t i = 0; i < sh->content_size; i++) {
+                        printf("%c", sh->slides_content[current_slide][i]);
+                    }
+                }
+                break;
+            case QUIT:
+                printf("Goodbye\n");
+                done = true;
+                break;
+            case JUMP:
+                printf("Slide: (%d total slides) ", sh->slide_count);
+                scanf("%d", &user_input);
+                if (user_input < 0 || user_input == 0) {
+                    current_slide = 0;
+                } else if (user_input > (sh->slide_count - 1)) {
+                    current_slide = (sh->slide_count - 1);
+                } else current_slide = (user_input - 1);
+
+                printf("[SLIDE #%d/%d]\n", current_slide + 1, sh->slide_count);
+                for (size_t i = 0; i < sh->content_size; i++) {
+                    printf("%c", sh->slides_content[current_slide][i]);
+                }
+
+                break;
+            default:
+                printf("ERROR: Bad input. Try again\n");
+                break;
         }
-        getchar();
     }
 }
 
@@ -150,7 +214,7 @@ void split_slides(Slideshow *sh) {
     sh->slide_count = slide_count;
 }
 
-void read_entire_file(Slideshow *sh) {
+int read_entire_file(Slideshow *sh) {
     sh->file_contents = NULL;
 
     FILE *file = fopen(sh->file_path, "r");
@@ -185,7 +249,12 @@ void read_entire_file(Slideshow *sh) {
 
     sh->content_size = rc;
 
+    fclose(file);
+
+    return 0;
 
 cleanup:
     if (file) fclose(file);
+
+    return 1;
 }
