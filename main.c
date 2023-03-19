@@ -6,7 +6,6 @@
 #include <stdbool.h>
 
 #include "main.h"
-#include "common.h"
 
 /*
 **
