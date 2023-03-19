@@ -46,28 +46,31 @@ void split_slides(Slideshow *sh) {
 
     int state = 0;
     int slide_count = 1;
+    int i = 0;
 
-    for (size_t i = 0; i < sh->content_size; i++) {
-        char c = sh->file_contents[i];
+    // NOTE: I'm still not 100% certain on when to use calloc vs malloc.
+    // Calloc initializes every byte to zero. While malloc doesn't.
+    sh->slides_content = calloc(slide_count, sizeof(char*));
+    sh->slides_content[slide_count - 1] = calloc(sh->content_size, sizeof(char)); // NOTE: using content size is probably a bad idea?
 
-        // TODO: After getting each slide, alloc and realloc mem for char **slides_content;
-        // look at the todocurses project for implementation example
+    for (const char *c = sh->file_contents; *c; c++) {
         switch (state) {
             case READY:
-                switch (c) {
+                switch (*c) {
                     case '-':
-                        printf("%c", c);
                         state = START_DELIM;
+                        if (*(c + 1) != '-') { // this handles the bullet points
+                            sh->slides_content[slide_count - 1][i] = *c;
+                        }
                         break;
                     default:
-                        printf("%c", c);
+                        sh->slides_content[slide_count - 1][i] = *c;
                         break;
                 }
                 break;
             case START_DELIM:
-                switch (c) {
+                switch (*c) {
                     case '-':
-                        printf("%c", c);
                         state = FOUND_DELIM;
                         break;
                     default:
@@ -76,12 +79,16 @@ void split_slides(Slideshow *sh) {
                 }
                 break;
             case FOUND_DELIM:
-                switch (c) {
+                switch (*c) {
                     case '\n':
-                        printf("%c", c);
                         slide_count++;
-                        getchar();
                         state = READY;
+
+                        // HERE WE REALLOC FOR THE NEXT SLIDE
+
+                        sh->slides_content = realloc(sh->slides_content, slide_count * sizeof(char*));
+                        sh->slides_content[slide_count - 1] = calloc(sh->content_size, sizeof(char)); // NOTE: using content size is probably a bad idea?
+                        break;
                     default:
                         break;
                 }
@@ -89,9 +96,25 @@ void split_slides(Slideshow *sh) {
             default:
                 break;
         }
+        i++;
     }
 
     printf("SLIDE COUNT: %d\n", slide_count);
+
+    sh->slide_count = slide_count;
+
+
+
+
+    // TEMP DISPLAY OUT
+
+    printf("FINAL ------------\n");
+    for (int sc = 0; sc < sh->slide_count; sc++) {
+        for (size_t i = 0; i < sh->content_size; i++) {
+            printf("%c", sh->slides_content[sc][i]);
+        }
+        getchar();
+    }
 }
 
 void read_entire_file(Slideshow *sh) {
