@@ -31,3 +31,4 @@ User creates some sort of file representing a slideshow (.md for now). It is spl
 
 - [Effective C](https://nostarch.com/Effective_C)
 - [Tsoding Mini excel](https://www.youtube.com/playlist?list=PLpM-Dvs8t0VYfQc5dq21Vc81G1rGHwkmT)
+- [C substring slicing](https://stackoverflow.com/questions/26620388/c-substrings-c-string-slicing)

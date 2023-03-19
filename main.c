@@ -39,6 +39,7 @@ void handle_cli_args(int argc, char **argv, Slideshow *sh) {
             }
 
             /*
+            // NOTE: https://stackoverflow.com/questions/26620388/c-substrings-c-string-slicing
             if () {
                 sh->file_path = NULL;
 
