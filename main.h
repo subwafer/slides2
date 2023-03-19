@@ -13,5 +13,6 @@ typedef struct {
 
 void split_slides(Slideshow *sh);
 void read_entire_file(Slideshow *sh);
+void stdout_display(const Slideshow *sh);
 
 #endif // MAIN_H_

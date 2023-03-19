@@ -21,6 +21,7 @@
 */
 
 bool DEBUG_MODE = false;
+bool STDOUT_MODE = false;
 
 void handle_cli_args(int argc, char **argv) {
 
@@ -29,6 +30,10 @@ void handle_cli_args(int argc, char **argv) {
             if (strcmp(argv[i], "--debug") == 0) {
                 DEBUG_MODE = true;
                 printf("------DEBUG MODE ACTIVE-------");
+            }
+
+            if (strcmp(argv[i], "--stdout") == 0) {
+                STDOUT_MODE = true;
             }
         }
     }
@@ -49,6 +54,11 @@ int main(int argc, char **argv) {
 
     split_slides(&sh);
 
+    if (STDOUT_MODE) {
+        stdout_display(&sh);
+    } else {
+        printf("A really, really cool SDL2 GUI not implemented.\n");
+    }
 
     for (int i = 0; i < sh.slide_count; i++) {
         free(sh.slides_content[i]);
@@ -57,6 +67,17 @@ int main(int argc, char **argv) {
     free(sh.slides_content);
 
     return 0;
+}
+
+void stdout_display(const Slideshow *sh) {
+    // TEMP DISPLAY OUT
+    printf("FINAL ------------\n");
+    for (int sc = 0; sc < sh->slide_count; sc++) {
+        for (size_t i = 0; i < sh->content_size; i++) {
+            printf("%c", sh->slides_content[sc][i]);
+        }
+        getchar();
+    }
 }
 
 void split_slides(Slideshow *sh) {
@@ -127,19 +148,6 @@ void split_slides(Slideshow *sh) {
     printf("SLIDE COUNT: %d\n", slide_count);
 
     sh->slide_count = slide_count;
-
-
-
-
-    // TEMP DISPLAY OUT
-
-    printf("FINAL ------------\n");
-    for (int sc = 0; sc < sh->slide_count; sc++) {
-        for (size_t i = 0; i < sh->content_size; i++) {
-            printf("%c", sh->slides_content[sc][i]);
-        }
-        getchar();
-    }
 }
 
 void read_entire_file(Slideshow *sh) {
