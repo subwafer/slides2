@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 #include "main.h"
+#include "common.h"
 
 /*
 **
@@ -26,60 +27,35 @@ bool STDOUT_MODE = false;
 void handle_cli_args(int argc, char **argv, Slideshow *sh) {
 
     if (argc > 0) {
-        for (int i = 0; i < argc; i++) {
+        for (int i = 1; i < argc; i++) {
             if (strcmp(argv[i], "--demo") == 0) {
                 printf("------DEMO MODE ACTIVE-------\n");
                 DEMO_MODE = true;
                 sh->file_path = "./demos/show1.md";
 
-            }
-
-            if (strcmp(argv[i], "--stdout") == 0) {
+            } else if (strcmp(argv[i], "--stdout") == 0) {
                 STDOUT_MODE = true;
-            }
-
-            /*
-            // NOTE: https://stackoverflow.com/questions/26620388/c-substrings-c-string-slicing
-            if () {
+            } else {
                 sh->file_path = NULL;
 
-                char file_path[64];
-                int state = 0;
-                int index = 0;
-
-                enum state {
-                    READY,
-                    DELIM_FOUND,
-                };
+                int start_idx = 0;
+                int end_idx = strlen(argv[i]);
 
                 for (size_t j = 0; j < strlen(argv[i]); j++) {
-                    switch (state) {
-                        case READY:
-                            switch (argv[i][j]) {
-                                case '=':
-                                    state = DELIM_FOUND;
-                                    break;
-                                default:
-                                    break;
-                            }
-                            break;
-                        case DELIM_FOUND:
-                            file_path[index] = argv[i][j];
-                            break;
-                        default:
-                            break;
+                    if (argv[i][j] == '=') {
+                        start_idx = j;
                     }
+                }
+
+                sh->file_path = malloc((end_idx - start_idx) * sizeof(char));
+
+                int index = 0;
+
+                for (size_t j = start_idx + 1; j < strlen(argv[i]); j++) {
+                    sh->file_path[index] = argv[i][j];
                     index++;
                 }
-                printf("FILE_PATH LOADED FROM ARGV: %s\n", sh->file_path);
-
-                sh->file_path = malloc(index * sizeof(char));
-
-                strcpy(sh->file_path, file_path);
-
-                printf("FILE_PATH LOADED FROM ARGV: %s\n", sh->file_path);
             }
-                */
         }
     }
 
@@ -111,6 +87,8 @@ int main(int argc, char **argv) {
     }
 
     free(sh.slides_content);
+
+    free(sh.file_path);
 
     return 0;
 }
