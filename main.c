@@ -61,6 +61,67 @@ void handle_cli_args(int argc, char **argv, Slideshow *sh) {
 
 }
 
+void sdl_test(void) {
+
+    int rendererFlags, windowFlags;
+
+    rendererFlags = SDL_RENDERER_ACCELERATED;
+
+    windowFlags = 0;
+
+    int SCREEN_WIDTH = 800;
+    int SCREEN_HEIGHT = 600;
+
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        printf("Couldn't init SDL: %s\n", SDL_GetError());
+        exit(1);
+    }
+
+    SDL_Window *window = SDL_CreateWindow("Slides",
+                                          SDL_WINDOWPOS_UNDEFINED,
+                                          SDL_WINDOWPOS_UNDEFINED,
+                                          SCREEN_WIDTH, SCREEN_HEIGHT,
+                                          windowFlags);
+
+    if (!window) {
+        printf("Failed to open %d x %d window: %s\n", SCREEN_WIDTH, SCREEN_HEIGHT, SDL_GetError());
+        exit(1);
+    }
+
+    // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, rendererFlags);
+
+    if (!renderer) {
+        printf("Failed to create renderer: %s\n", SDL_GetError());
+        exit(1);
+    }
+
+    SDL_SetRenderDrawColor(renderer, 96, 128, 255, 255);
+    SDL_RenderClear(renderer);
+
+    while (1) {
+        SDL_Event event;
+
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+                case SDL_QUIT:
+                    exit(0);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        SDL_RenderPresent(renderer);
+    }
+
+    SDL_Quit();
+}
+
 int main(int argc, char **argv) {
     Slideshow sh;
 
@@ -77,7 +138,10 @@ int main(int argc, char **argv) {
         stdout_display(&sh);
     } else {
         // TODO: Integrate with SDL2
-        printf("A really, really cool SDL2 GUI not implemented.\n");
+
+        // NOTE: This is a temp funtion while testing SDL2.
+        sdl_test();
+
     }
 
     // NOTE: We probably should check if slides_content has been initialized?

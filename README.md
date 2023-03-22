@@ -16,6 +16,9 @@ User creates some sort of file representing a slideshow (.md for now). It is spl
 - [x] user controls in stdout
 - [x] cli args handing for --file_path
 - [ ] SDL2 gui
+- [ ] file browser
+- [ ] customize each slide
+- [ ] customize slideshow with template
 
 ## Usage
 
@@ -23,6 +26,9 @@ User creates some sort of file representing a slideshow (.md for now). It is spl
 # build with build.sh
 
 ./build.sh
+
+# run program in demo mode with SDL2 gui (WIP)
+./main --demo
 
 # run program in demo mode with stdout display
 ./main --demo --stdout
