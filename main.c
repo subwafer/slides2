@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <assert.h>
 #include <stdbool.h>
+#include <SDL2/SDL.h>
 
 #include "main.h"
 
@@ -65,8 +66,6 @@ int main(int argc, char **argv) {
 
     handle_cli_args(argc, argv, &sh);
 
-
-
     if (read_entire_file(&sh) > 0) {
         // NOTE: Temp solution. Once UI is in, we can add a file selector.
         exit(1);
@@ -77,6 +76,7 @@ int main(int argc, char **argv) {
     if (STDOUT_MODE) {
         stdout_display(&sh);
     } else {
+        // TODO: Integrate with SDL2
         printf("A really, really cool SDL2 GUI not implemented.\n");
     }
 
@@ -86,8 +86,6 @@ int main(int argc, char **argv) {
     }
 
     free(sh.slides_content);
-
-    free(sh.file_path);
 
     return 0;
 }
