@@ -4,22 +4,12 @@
 #include <errno.h>
 #include <assert.h>
 #include <stdbool.h>
+
+// SDL STUFF
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "main.h"
-
-/*
-**
-** Creates slideshows from a file of some sort (.md for now)
-** Displays slideshows in native gui (SDL2)
-**
-** 1. read entire file (as bytes) into continuous buffer
-** 2. get the number of slides (delimited by "---")
-** 3. display each slide one at a time in stdout
-** 4. add user control to switch slides and jump to specific slide
-** 5. figure out SDL2
-**
-*/
 
 bool DEMO_MODE = false;
 bool STDOUT_MODE = false;
@@ -62,6 +52,9 @@ void handle_cli_args(int argc, char **argv, Slideshow *sh) {
 }
 
 void sdl_test(void) {
+    // TODO: Move to a gui.h / gui.c file
+
+    // Quick guide: https://www.geeksforgeeks.org/sdl-library-in-c-c-with-examples/
 
     int rendererFlags, windowFlags;
 
@@ -69,6 +62,7 @@ void sdl_test(void) {
 
     windowFlags = 0;
 
+    // TODO: #define instead of vars
     int SCREEN_WIDTH = 800;
     int SCREEN_HEIGHT = 600;
 
@@ -77,6 +71,10 @@ void sdl_test(void) {
         exit(1);
     }
 
+    TTF_Init();
+
+    // TODO: structs for SDL_Window and SDL_Renderer?
+    // Probably makes sense so we can easily pass these around to other funcs
     SDL_Window *window = SDL_CreateWindow("Slides",
                                           SDL_WINDOWPOS_UNDEFINED,
                                           SDL_WINDOWPOS_UNDEFINED,
@@ -97,28 +95,76 @@ void sdl_test(void) {
         exit(1);
     }
 
-    SDL_SetRenderDrawColor(renderer, 96, 128, 255, 255);
-    SDL_RenderClear(renderer);
+
+    // START FONT STUFF HERE
+    // SEE: https://stackoverflow.com/questions/22886500/how-to-render-text-in-sdl2
+    // This opens the font style and sets the size
+    TTF_Font* font = TTF_OpenFont("./Roboto-Regular.ttf", 16);
+
+    // set color in rgb format
+    SDL_Color White = {255, 255, 255, 255};
+
+    // create SDL surface
+    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, "Here is some text that would be the slide", White);
+
+    // convert the surface into a texture
+    SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+
+    // create a rect
+    SDL_Rect Message_rect;
+    Message_rect.x = 0;
+    Message_rect.y = 0;
+    Message_rect.w = 100;
+    Message_rect.h = 100;
+
+
+        // END FONT STUFF
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    //SDL_RenderClear(renderer);
 
     while (1) {
         SDL_Event event;
 
-        while (SDL_PollEvent(&event))
-        {
-            switch (event.type)
-            {
+        // NOTE: https://stackoverflow.com/questions/12770098/how-to-keep-the-cpu-usage-down-while-running-an-sdl-program
+        if (SDL_WaitEvent(&event) != 0) {
+            switch (event.type) {
                 case SDL_QUIT:
                     exit(0);
                     break;
 
+                case SDL_KEYDOWN: {
+                    switch (event.key.keysym.sym) {
+                        case SDLK_LEFT:
+                            printf("LEFT!\n");
+                            break;
+                        case SDLK_RIGHT:
+                            printf("RIGHT!\n");
+                            break;
+                    }
+                }
+                break;
                 default:
                     break;
             }
         }
 
         SDL_RenderPresent(renderer);
+
+        SDL_RenderClear(renderer);
+        // This should render the text?
+        SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+
+
+        // TODO: Display each slide in the window as soon as the app is launched (for now --no file browser yet)
+        // TODO: Left and right arrows change slide
+        // TODO: Parse the slide markdown to format the contents
     }
 
+    // Don't forget to free your surface and texture
+
+    SDL_FreeSurface(surfaceMessage);
+    SDL_DestroyTexture(Message);
     SDL_Quit();
 }
 
@@ -127,6 +173,7 @@ int main(int argc, char **argv) {
 
     handle_cli_args(argc, argv, &sh);
 
+    // TODO: File Explorer
     if (read_entire_file(&sh) > 0) {
         // NOTE: Temp solution. Once UI is in, we can add a file selector.
         exit(1);
@@ -141,7 +188,6 @@ int main(int argc, char **argv) {
 
         // NOTE: This is a temp funtion while testing SDL2.
         sdl_test();
-
     }
 
     // NOTE: We probably should check if slides_content has been initialized?

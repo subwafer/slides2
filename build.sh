@@ -5,4 +5,4 @@ set -xe
 CC=clang
 CFLAGS="-Wall -Wextra -std=c11 -ggdb -pedantic"
 
-$CC $CFLAGS -o main main.c -lSDL2
+$CC $CFLAGS -o main main.c -lSDL2 -lSDL2_ttf
