@@ -51,7 +51,7 @@ void handle_cli_args(int argc, char **argv, Slideshow *sh) {
 
 }
 
-void sdl_test(void) {
+void sdl_test(const Slideshow *sh) {
     // TODO: Move to a gui.h / gui.c file
 
     // Quick guide: https://www.geeksforgeeks.org/sdl-library-in-c-c-with-examples/
@@ -60,7 +60,7 @@ void sdl_test(void) {
 
     rendererFlags = SDL_RENDERER_ACCELERATED;
 
-    windowFlags = 0;
+    windowFlags = SDL_WINDOW_RESIZABLE;
 
     // TODO: #define instead of vars
     int SCREEN_WIDTH = 800;
@@ -96,16 +96,16 @@ void sdl_test(void) {
     }
 
 
-    // START FONT STUFF HERE
+    // START TEXT STUFF HERE
     // SEE: https://stackoverflow.com/questions/22886500/how-to-render-text-in-sdl2
     // This opens the font style and sets the size
-    TTF_Font* font = TTF_OpenFont("./Roboto-Regular.ttf", 16);
+    TTF_Font* font = TTF_OpenFont("./Roboto-Regular.ttf", 10);
 
     // set color in rgb format
     SDL_Color White = {255, 255, 255, 255};
 
     // create SDL surface
-    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, "Here is some text that would be the slide", White);
+    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font, sh->slides_content[0], White);
 
     // convert the surface into a texture
     SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
@@ -114,11 +114,10 @@ void sdl_test(void) {
     SDL_Rect Message_rect;
     Message_rect.x = 0;
     Message_rect.y = 0;
-    Message_rect.w = 100;
-    Message_rect.h = 100;
+    Message_rect.w = 800;
+    Message_rect.h = 600;
 
-
-        // END FONT STUFF
+    // END TEXT STUFF
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     //SDL_RenderClear(renderer);
@@ -187,7 +186,7 @@ int main(int argc, char **argv) {
         // TODO: Integrate with SDL2
 
         // NOTE: This is a temp funtion while testing SDL2.
-        sdl_test();
+        sdl_test(&sh);
     }
 
     // NOTE: We probably should check if slides_content has been initialized?
