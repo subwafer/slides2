@@ -63,15 +63,14 @@ void sdl_test(const Slideshow *sh) {
     windowFlags = SDL_WINDOW_RESIZABLE;
 
     // TODO: #define instead of vars
-    int SCREEN_WIDTH = 800;
-    int SCREEN_HEIGHT = 600;
+    int SCREEN_WIDTH = 1280;
+    int SCREEN_HEIGHT = 720;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("Couldn't init SDL: %s\n", SDL_GetError());
         exit(1);
     }
 
-    TTF_Init();
 
     // TODO: structs for SDL_Window and SDL_Renderer?
     // Probably makes sense so we can easily pass these around to other funcs
@@ -99,7 +98,8 @@ void sdl_test(const Slideshow *sh) {
     // START TEXT STUFF HERE
     // SEE: https://stackoverflow.com/questions/22886500/how-to-render-text-in-sdl2
     // This opens the font style and sets the size
-    TTF_Font* font = TTF_OpenFont("./Roboto-Regular.ttf", 10);
+    TTF_Init();
+    TTF_Font* font = TTF_OpenFont("./OpenSans-Regular.ttf", 172);
 
     // set color in rgb format
     SDL_Color White = {255, 255, 255, 255};
@@ -111,11 +111,11 @@ void sdl_test(const Slideshow *sh) {
     SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
 
     // create a rect
-    SDL_Rect Message_rect;
-    Message_rect.x = 0;
-    Message_rect.y = 0;
-    Message_rect.w = 800;
-    Message_rect.h = 600;
+    SDL_Rect window_rect;
+    window_rect.x = 0;
+    window_rect.y = 0;
+    window_rect.w = 1280;
+    window_rect.h = 720;
 
     // END TEXT STUFF
 
@@ -132,6 +132,8 @@ void sdl_test(const Slideshow *sh) {
                     exit(0);
                     break;
 
+                // Left, right nav for slides. Typing J will start "Jump to slide"
+                // ESC key is menu (if at menu ESC again, will prompt to quit)
                 case SDL_KEYDOWN: {
                     switch (event.key.keysym.sym) {
                         case SDLK_LEFT:
@@ -152,10 +154,9 @@ void sdl_test(const Slideshow *sh) {
 
         SDL_RenderClear(renderer);
         // This should render the text?
-        SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+        SDL_RenderCopy(renderer, Message, NULL, &window_rect);
 
-
-        // TODO: Display each slide in the window as soon as the app is launched (for now --no file browser yet)
+        // TODO: Display each slide in the window as soon as the app is launched (for now --no file browser)
         // TODO: Left and right arrows change slide
         // TODO: Parse the slide markdown to format the contents
     }
@@ -180,6 +181,7 @@ int main(int argc, char **argv) {
 
     split_slides(&sh);
 
+
     if (STDOUT_MODE) {
         stdout_display(&sh);
     } else {
@@ -187,6 +189,11 @@ int main(int argc, char **argv) {
 
         // NOTE: This is a temp funtion while testing SDL2.
         sdl_test(&sh);
+    }
+
+
+    if (sh.file_contents) {
+        free(sh.file_contents);
     }
 
     // NOTE: We probably should check if slides_content has been initialized?
@@ -209,6 +216,8 @@ void stdout_display(const Slideshow *sh) {
     }
 
     while (!done) {
+        printf("CURRENT SLIDE: %d\n", current_slide);
+
         int user_input;
 
         enum input_handling {
@@ -221,6 +230,7 @@ void stdout_display(const Slideshow *sh) {
         printf("\n");
         printf("-----------------------------------------------------------------\n");
         printf("Next Slide (1) | Prev. Slide (-1) | Jump to Slide (8) | Quit (0) > ");
+
 
         scanf("%d", &user_input);
         switch (user_input) {
@@ -289,6 +299,9 @@ void split_slides(Slideshow *sh) {
 
     // NOTE: I'm still not 100% certain on when to use calloc vs malloc.
     // Calloc initializes every byte to zero. While malloc doesn't.
+    //
+    //
+    // TODO: Something seems to be up here? See gdb, sh.slides_content[1] and onwards
     sh->slides_content = calloc(slide_count, sizeof(char*));
     sh->slides_content[slide_count - 1] = calloc(sh->content_size, sizeof(char)); // NOTE: using content size is probably a bad idea?
 
@@ -321,6 +334,7 @@ void split_slides(Slideshow *sh) {
             case FOUND_DELIM:
                 switch (*c) {
                     case '\n':
+                        sh->slides_content[slide_count - 1][i] = '\0'; //This doesn't seem to do it?
                         slide_count++;
                         state = READY;
 
@@ -342,6 +356,28 @@ void split_slides(Slideshow *sh) {
     printf("SLIDE COUNT: %d\n", slide_count);
 
     sh->slide_count = slide_count;
+
+
+    // NOTE: So basically, if I try to print the string (or use as a string) it fails.
+    // However, If I print the chars in a loop, the data is there. Clearly I have to null terminate. Question is how and where.
+    printf("CHAR ARRAY LOOP DEMO:-----\n");
+    for (size_t i = 0; i < sh->content_size; i++) {
+        char c = sh->slides_content[0][i];
+        if (c == '\0') printf("\\0");
+        printf("%c", c);
+    }
+    printf("\n");
+    printf("END CHAR ARRAY LOOP DEMO \n");
+
+    printf("STRING PRINT HERE\n");
+    printf("%s", sh->slides_content[1]);
+    printf("END STRING PRINT HERE\n");
+/*
+    printf(">>>>>>>>>\n");
+    printf("%s", sh->slides_content[1]);
+    printf(">>>>>>>>>\n");
+    printf("\n");
+*/
 }
 
 int read_entire_file(Slideshow *sh) {
